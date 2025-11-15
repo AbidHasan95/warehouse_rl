@@ -1,0 +1,62 @@
+[gd_scene load_steps=3 format=3 uid="uid://d3425vyydruy7"]
+
+[ext_resource type="PackedScene" uid="uid://c2yrtulsplmwk" path="res://scenes/world.tscn" id="1_3b5pu"]
+[ext_resource type="Script" uid="uid://dbi4jecafoqex" path="res://addons/godot_rl_agents/sync.gd" id="2_p8dsb"]
+
+[node name="BatchEnvs" type="Node"]
+
+[node name="World" parent="." instance=ExtResource("1_3b5pu")]
+
+[node name="World2" parent="." instance=ExtResource("1_3b5pu")]
+position = Vector2(1920, 0)
+
+[node name="World3" parent="." instance=ExtResource("1_3b5pu")]
+position = Vector2(3840, 0)
+
+[node name="World4" parent="." instance=ExtResource("1_3b5pu")]
+position = Vector2(5760, 0)
+
+[node name="World5" parent="." instance=ExtResource("1_3b5pu")]
+position = Vector2(0, 1100)
+
+[node name="World6" parent="." instance=ExtResource("1_3b5pu")]
+position = Vector2(1920, 1100)
+
+[node name="World7" parent="." instance=ExtResource("1_3b5pu")]
+position = Vector2(3840, 1100)
+
+[node name="World8" parent="." instance=ExtResource("1_3b5pu")]
+position = Vector2(5760, 1100)
+
+[node name="World9" parent="." instance=ExtResource("1_3b5pu")]
+position = Vector2(0, 2200)
+
+[node name="World10" parent="." instance=ExtResource("1_3b5pu")]
+position = Vector2(1920, 2200)
+
+[node name="World11" parent="." instance=ExtResource("1_3b5pu")]
+position = Vector2(3840, 2200)
+
+[node name="World12" parent="." instance=ExtResource("1_3b5pu")]
+position = Vector2(5760, 2200)
+
+[node name="World13" parent="." instance=ExtResource("1_3b5pu")]
+position = Vector2(0, 3300)
+
+[node name="World14" parent="." instance=ExtResource("1_3b5pu")]
+position = Vector2(1920, 3300)
+
+[node name="World15" parent="." instance=ExtResource("1_3b5pu")]
+position = Vector2(3840, 3300)
+
+[node name="World16" parent="." instance=ExtResource("1_3b5pu")]
+position = Vector2(5760, 3300)
+
+[node name="Camera2D" type="Camera2D" parent="."]
+offset = Vector2(1920, 1080)
+zoom = Vector2(0.5, 0.5)
+
+[node name="Sync" type="Node" parent="."]
+script = ExtResource("2_p8dsb")
+speed_up = 8.0
+onnx_model_path = "model.onnx"

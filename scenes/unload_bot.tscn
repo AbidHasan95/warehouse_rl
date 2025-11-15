@@ -1,0 +1,33 @@
+[gd_scene load_steps=6 format=3 uid="uid://u5md3yciipo0"]
+
+[ext_resource type="Script" uid="uid://bksej1ltbdov6" path="res://Scripts/unload_bot.gd" id="1_lsgl4"]
+[ext_resource type="Texture2D" uid="uid://d0lyvy053x4cw" path="res://Assets/Bot1-1.png" id="1_nrv0i"]
+[ext_resource type="Script" uid="uid://clrtouomajb3j" path="res://addons/godot_rl_agents/sensors/sensors_2d/RaycastSensor2D.gd" id="3_lh7yw"]
+[ext_resource type="Script" uid="uid://vncwn1jnxv17" path="res://Scripts/ai_controller_2d.gd" id="4_n1wtp"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_ecdo4"]
+radius = 240.0
+
+[node name="Unload_Bot" type="CharacterBody2D"]
+collision_mask = 3
+script = ExtResource("1_lsgl4")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_ecdo4")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_nrv0i")
+
+[node name="TrayObjectSprite" type="Sprite2D" parent="."]
+scale = Vector2(0.5, 0.5)
+
+[node name="RaycastSensor2D" type="Node2D" parent="."]
+script = ExtResource("3_lh7yw")
+collision_mask = 2
+collide_with_areas = true
+collide_with_bodies = false
+ray_length = 1500
+
+[node name="AIController2D" type="Node2D" parent="." groups=["AGENT"]]
+script = ExtResource("4_n1wtp")
+reset_after = 20000

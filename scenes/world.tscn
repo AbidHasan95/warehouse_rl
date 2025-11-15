@@ -1,0 +1,225 @@
+[gd_scene load_steps=10 format=3 uid="uid://c2yrtulsplmwk"]
+
+[ext_resource type="Texture2D" uid="uid://bew68ftchjdj6" path="res://Assets/Obj-1.png" id="1_4wyf3"]
+[ext_resource type="Script" uid="uid://b8e3ua5t7lxom" path="res://Scripts/world.gd" id="1_71j4m"]
+[ext_resource type="Texture2D" uid="uid://bm02dt86evgvp" path="res://Assets/Obj-2.png" id="2_k0juu"]
+[ext_resource type="Texture2D" uid="uid://v3gu5fj7wqe7" path="res://Assets/Obj-3.png" id="3_71j4m"]
+[ext_resource type="PackedScene" uid="uid://u5md3yciipo0" path="res://scenes/unload_bot.tscn" id="4_k0juu"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_e5uuo"]
+size = Vector2(456, 129.166)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_nnsk1"]
+size = Vector2(72, 208)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_k0juu"]
+size = Vector2(1917, 50)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_71j4m"]
+size = Vector2(37, 1001)
+
+[node name="World" type="Node2D"]
+script = ExtResource("1_71j4m")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 6
+color = Color(0.252028, 0.252028, 0.252028, 1)
+
+[node name="ColorRect2" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 40.0
+offset_top = 40.0
+offset_right = 1880.0
+offset_bottom = 1040.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.438429, 0.460534, 0.455176, 1)
+
+[node name="StatsLabel" type="Label" parent="."]
+visible = false
+offset_left = 1768.0
+offset_top = 80.0
+offset_right = 1808.0
+offset_bottom = 135.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 40
+text = "0"
+
+[node name="shelf1" type="Area2D" parent="."]
+position = Vector2(376, 904)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="shelf1"]
+shape = SubResource("RectangleShape2D_e5uuo")
+
+[node name="ColorRect" type="ColorRect" parent="shelf1"]
+offset_left = -232.0
+offset_top = -72.0
+offset_right = 224.0
+offset_bottom = 72.0
+size_flags_horizontal = 2
+size_flags_vertical = 2
+color = Color(0.905678, 0.451183, 0.611298, 1)
+
+[node name="Label" type="Label" parent="shelf1"]
+offset_left = -200.0
+offset_top = -32.0
+offset_right = -160.0
+offset_bottom = 23.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 40
+text = "0"
+
+[node name="shelf2" type="Area2D" parent="."]
+position = Vector2(952, 904)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="shelf2"]
+shape = SubResource("RectangleShape2D_e5uuo")
+
+[node name="ColorRect" type="ColorRect" parent="shelf2"]
+offset_left = -224.0
+offset_top = -72.0
+offset_right = 232.0
+offset_bottom = 72.0
+color = Color(0.501774, 0.682294, 0.213206, 1)
+
+[node name="Label" type="Label" parent="shelf2"]
+offset_left = -192.0
+offset_top = -24.0
+offset_right = -152.0
+offset_bottom = 31.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 40
+text = "0"
+
+[node name="shelf3" type="Area2D" parent="."]
+position = Vector2(1536, 912)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="shelf3"]
+shape = SubResource("RectangleShape2D_e5uuo")
+
+[node name="ColorRect" type="ColorRect" parent="shelf3"]
+offset_left = -232.0
+offset_top = -72.0
+offset_right = 224.0
+offset_bottom = 72.0
+color = Color(0.34248, 0.667563, 0.776539, 1)
+
+[node name="Label" type="Label" parent="shelf3"]
+offset_left = -208.0
+offset_top = -24.0
+offset_right = -168.0
+offset_bottom = 31.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 40
+text = "0"
+
+[node name="innerObstacle1" type="Area2D" parent="."]
+position = Vector2(958, 687)
+scale = Vector2(0.5, 0.2)
+collision_layer = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="innerObstacle1"]
+position = Vector2(-3.33334, -7.91699)
+shape = SubResource("RectangleShape2D_e5uuo")
+
+[node name="ColorRect" type="ColorRect" parent="innerObstacle1"]
+offset_left = -231.333
+offset_top = -76.667
+offset_right = 224.667
+offset_bottom = 67.333
+color = Color(0.25098, 0.25098, 0.25098, 1)
+
+[node name="loadingArea" type="Area2D" parent="."]
+position = Vector2(170, 171)
+
+[node name="ColorRect" type="ColorRect" parent="loadingArea"]
+offset_left = -73.0
+offset_top = -85.0
+offset_right = -33.0
+offset_bottom = -45.0
+scale = Vector2(3.69019, 5.14536)
+color = Color(0.259641, 0.239076, 0.199052, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="loadingArea"]
+position = Vector2(35, 19)
+shape = SubResource("RectangleShape2D_nnsk1")
+
+[node name="ColorRect" type="ColorRect" parent="loadingArea/CollisionShape2D"]
+offset_left = -36.0
+offset_top = -104.0
+offset_right = 4.0
+offset_bottom = -64.0
+scale = Vector2(1.87025, 5.19614)
+color = Color(0.654232, 0.654232, 0.654232, 1)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="loadingArea"]
+offset_left = -73.0
+offset_top = -85.0
+offset_right = -33.0
+offset_bottom = -45.0
+scale = Vector2(1.69023, 5.17987)
+theme_override_constants/separation = 5
+
+[node name="loadingArea_Item1" type="Node2D" parent="loadingArea/VBoxContainer"]
+position = Vector2(0, -9.26665)
+
+[node name="Sprite2D" type="Sprite2D" parent="loadingArea/VBoxContainer/loadingArea_Item1"]
+position = Vector2(19.5239, 16.4097)
+scale = Vector2(0.06, 0.02)
+texture = ExtResource("1_4wyf3")
+
+[node name="loadingArea_Item2" type="Node2D" parent="loadingArea/VBoxContainer"]
+position = Vector2(0, 3.08888)
+
+[node name="Sprite2D" type="Sprite2D" parent="loadingArea/VBoxContainer/loadingArea_Item2"]
+position = Vector2(19.5239, 16.4097)
+scale = Vector2(0.06, 0.02)
+texture = ExtResource("2_k0juu")
+
+[node name="loadingArea_Item3" type="Node2D" parent="loadingArea/VBoxContainer"]
+position = Vector2(0, 15.4444)
+
+[node name="Sprite2D" type="Sprite2D" parent="loadingArea/VBoxContainer/loadingArea_Item3"]
+position = Vector2(19.5239, 16.4097)
+scale = Vector2(0.06, 0.02)
+texture = ExtResource("3_71j4m")
+
+[node name="Label" type="Label" parent="loadingArea"]
+offset_left = 14.0
+offset_top = -67.0
+offset_right = 54.0
+offset_bottom = -44.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 40
+text = "0"
+
+[node name="WallArea2D" type="Area2D" parent="."]
+collision_layer = 2
+
+[node name="CollisionShapeWallTop" type="CollisionShape2D" parent="WallArea2D" groups=["wall"]]
+position = Vector2(960, 16)
+shape = SubResource("RectangleShape2D_k0juu")
+
+[node name="CollisionShapeWallBottom" type="CollisionShape2D" parent="WallArea2D" groups=["wall"]]
+position = Vector2(961.5, 1064)
+shape = SubResource("RectangleShape2D_k0juu")
+
+[node name="CollisionShapeWallLeft" type="CollisionShape2D" parent="WallArea2D" groups=["wall"]]
+position = Vector2(20, 540)
+shape = SubResource("RectangleShape2D_71j4m")
+
+[node name="CollisionShapeWallRight" type="CollisionShape2D" parent="WallArea2D" groups=["wall"]]
+position = Vector2(1896, 536)
+shape = SubResource("RectangleShape2D_71j4m")
+
+[node name="Unload_Bot" parent="." instance=ExtResource("4_k0juu")]
+position = Vector2(1000, 336)
+scale = Vector2(0.2, 0.2)
