@@ -17,46 +17,46 @@ position = Vector2(3840, 0)
 position = Vector2(5760, 0)
 
 [node name="World5" parent="." instance=ExtResource("1_3b5pu")]
-position = Vector2(0, 1100)
+position = Vector2(0, 1080)
 
 [node name="World6" parent="." instance=ExtResource("1_3b5pu")]
-position = Vector2(1920, 1100)
+position = Vector2(1920, 1080)
 
 [node name="World7" parent="." instance=ExtResource("1_3b5pu")]
-position = Vector2(3840, 1100)
+position = Vector2(3840, 1080)
 
 [node name="World8" parent="." instance=ExtResource("1_3b5pu")]
-position = Vector2(5760, 1100)
+position = Vector2(5760, 1080)
 
 [node name="World9" parent="." instance=ExtResource("1_3b5pu")]
-position = Vector2(0, 2200)
+position = Vector2(0, 2160)
 
 [node name="World10" parent="." instance=ExtResource("1_3b5pu")]
-position = Vector2(1920, 2200)
+position = Vector2(1920, 2160)
 
 [node name="World11" parent="." instance=ExtResource("1_3b5pu")]
-position = Vector2(3840, 2200)
+position = Vector2(3840, 2160)
 
 [node name="World12" parent="." instance=ExtResource("1_3b5pu")]
-position = Vector2(5760, 2200)
+position = Vector2(5760, 2160)
 
 [node name="World13" parent="." instance=ExtResource("1_3b5pu")]
-position = Vector2(0, 3300)
+position = Vector2(0, 3240)
 
 [node name="World14" parent="." instance=ExtResource("1_3b5pu")]
-position = Vector2(1920, 3300)
+position = Vector2(1920, 3240)
 
 [node name="World15" parent="." instance=ExtResource("1_3b5pu")]
-position = Vector2(3840, 3300)
+position = Vector2(3840, 3240)
 
 [node name="World16" parent="." instance=ExtResource("1_3b5pu")]
-position = Vector2(5760, 3300)
+position = Vector2(5760, 3240)
 
 [node name="Camera2D" type="Camera2D" parent="."]
-offset = Vector2(1920, 1080)
-zoom = Vector2(0.5, 0.5)
+anchor_mode = 0
 
 [node name="Sync" type="Node" parent="."]
 script = ExtResource("2_p8dsb")
-speed_up = 8.0
+control_mode = 2
+speed_up = 2.0
 onnx_model_path = "model.onnx"

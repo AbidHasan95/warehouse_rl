@@ -19,6 +19,7 @@ config/icon="res://icon.svg"
 
 window/size/viewport_width=1920
 window/size/viewport_height=1080
+window/size/initial_position_type=0
 window/stretch/mode="canvas_items"
 
 [dotnet]
@@ -27,7 +28,7 @@ project/assembly_name="Warehouse"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/godot_rl_agents/plugin.cfg")
+enabled=PackedStringArray("res://addons/god_plot/plugin.cfg", "res://addons/godot_rl_agents/plugin.cfg")
 
 [input]
 

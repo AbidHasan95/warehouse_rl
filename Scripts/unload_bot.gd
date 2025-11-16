@@ -6,6 +6,7 @@ extends CharacterBody2D
 @onready var ai_controller:= $AIController2D
 @onready var world:= $".."
 @onready var bot1_tray_obj_sprite:Sprite2D = $TrayObjectSprite
+@onready var bot_sprite: Sprite2D = $Sprite2D
 
 @onready var shelf1:Area2D = $"../shelf1"
 @onready var shelf2:Area2D = $"../shelf2"
@@ -13,10 +14,26 @@ extends CharacterBody2D
 @onready var loading_area:Area2D = $"../loadingArea"
 
 # Stats Labels
+@onready var bot_stats_label1:Label = $"../StatsLabel1"
+@onready var bot_stats_label2:Label = $"../StatsLabel2"
 @onready var loading_stat_label = $"../loadingArea/Label"
 @onready var shelf1_stat_label = $"../shelf1/Label"
 @onready var shelf2_stat_label = $"../shelf2/Label"
 @onready var shelf3_stat_label = $"../shelf3/Label"
+
+# Sync Node
+@onready var sync_node = $"../../Sync"
+
+# Graph2D
+@onready var graph_2d = $"../Graph2D"
+var line_series = LineSeries.new(Color.SEA_GREEN,2.0)
+var prev_reward = 0
+var reward_diff = 0
+
+## Graph using GraphEdit
+#@onready var plot_line = $"../GraphEdit/GraphNode/Line2D"
+var plot_series_array = []
+var plot_series_array_avg = []
 
 var successful_loads_unloads = {
 	"loading_bay": 0,
@@ -87,26 +104,33 @@ func update_ui_successful_loads_unloads(action_type):
 			successful_loads_unloads["shelf3"]+=1
 			shelf3_stat_label.text = str(successful_loads_unloads["shelf3"])
 		
-		
-	
+
 	
 func load_item():
+	#print("load item by", self.name)
 	if tray_item_index!=0 or bot_location["loading_bay"]==false:
 		ai_controller.reward -= 2
 		return
 		
-	ai_controller.reward += 10.0
+	ai_controller.reward += 20
 	var item_obj = world.unload_load_bay()
 	bot1_tray_obj_sprite.texture = item_obj["sprite"]
 	tray_item_index = item_obj["index"]
 	update_ui_successful_loads_unloads("load")
 	best_distance = 2500
 	
+func is_holding_item():
+	if tray_item_index!=0:
+		return 1
+	else:
+		return 0
+	
 func unload_item():
+	#print("unload item by", self.name)
 	#print(tray_item_index,bot_location)
 	if (tray_item_index==1 and bot_location["shelf1"]) or (tray_item_index==2 and bot_location["shelf2"]) or (tray_item_index==3 and bot_location["shelf3"]):		
 		ai_controller.done = true
-		ai_controller.reward+= 10.0
+		ai_controller.reward+= 20
 		update_ui_successful_loads_unloads("unload")
 		bot1_tray_obj_sprite.texture = null
 		tray_item_index = 0
@@ -116,10 +140,15 @@ func unload_item():
 		return
 	
 func _ready() -> void:
+	print("Mode: ",sync_node.control_mode)
 	ai_controller.init(self)
 	raycast_sensor.activate()
 	wall.body_entered.connect(onWallEnter)
 	innerObstacle1.body_entered.connect(onWallEnter)
+	if name == "Unload_Bot2":
+		bot_sprite.self_modulate = Color(0.2,0.53,0.85,1.0)
+	else:
+		bot_sprite.self_modulate = Color(0.41, 0.54, 0.32, 1)
 	#Update bot location
 	# Entry
 	loading_area.body_entered.connect(update_bot_location.bind(true,"loading_bay"))
@@ -132,7 +161,34 @@ func _ready() -> void:
 	shelf2.body_exited.connect(update_bot_location.bind(false,"shelf2"))
 	shelf3.body_exited.connect(update_bot_location.bind(false,"shelf3"))
 	
+	# Graph2D
+	graph_2d.add_series(line_series)
+	#var myarray = [1,4,8,2,0,7,12,2]
+	#plot_series(myarray)
 	
+func calculate_mean(data_array: Array) -> float:
+	if data_array.is_empty():
+		return 0.0 # Or handle error for empty array
+	var sum := 0.0
+	for value in data_array:
+		if typeof(value) == TYPE_INT or typeof(value) == TYPE_FLOAT:
+			sum += float(value)
+		else:
+			# Handle non-numerical elements, e.g., skip or raise error
+			pass 
+	return sum / data_array.size()
+	
+#func plot_series(series):
+	#plot_line.clear_points()
+	#for i in range(series.size()):
+		#plot_line.add_point(Vector2(i*5, -series[i]))
+		
+var ema := 0.0
+const ALPHA := 0.2   # smaller = smoother default-0.1
+
+func get_ema(value: float) -> float:
+	ema = ALPHA * value + (1.0 - ALPHA) * ema
+	return ema
 	
 func _process(delta: float) -> void:
 	steps += 1
@@ -145,6 +201,7 @@ func _process(delta: float) -> void:
 	set_velocity(_velocity)
 	move_and_slide()
 	_velocity = velocity
+	prev_reward = ai_controller.reward
 	if ai_controller.heuristic=="model":
 		if _action_load:
 			load_item()
@@ -155,7 +212,32 @@ func _process(delta: float) -> void:
 			load_item()
 		if Input.is_action_just_pressed("action_unload"):
 			unload_item()
+	
 	update_reward()
+	reward_diff = ai_controller.reward - prev_reward
+	var smoothed = get_ema(reward_diff)
+	
+	#plot_series_array.append(Vector2(steps,smoothed))
+	plot_series_array.append(reward_diff * 3)
+	
+	#plot_series_array.append(reward_diff)
+	if plot_series_array.size() >= 80:
+		plot_series_array.pop_front()
+
+	if steps % 80==0:
+		var avg = calculate_mean(plot_series_array)
+		#print("plot point-",plot_series_array.size(), " steps:",steps, " line series data-",line_series.data.size(), " data -",line_series.data)
+		if sync_node.control_mode ==2:
+			if line_series.data.size() >= 15:
+				for idx in range(line_series.data.size()):
+					line_series.data[idx][0] -= 1
+			line_series.add_point(line_series.data.size(),avg)
+			if line_series.data.size()>15:
+				line_series.remove_point_at(0)
+		if name == "Unload_Bot1":
+			bot_stats_label1.text = "Reward: %.1f" % ai_controller.reward
+		elif name== "Unload_Bot2":
+			bot_stats_label2.text = "Reward: %.1f" % ai_controller.reward
 	
 func getNewPosition():
 	#return Vector2i(960, 540)
@@ -198,10 +280,13 @@ func get_area_distances():
 	
 func wallHit():
 	#ai_controller.done = true
-	ai_controller.reward -= 50.0
+	#print("wall hit by ",self.name)
+	ai_controller.reward -= 80.0
 	gameover()
 	
 func onWallEnter(body)-> void:
+	if body != self:
+		return
 	#print("Heloooo")
 	wallHit()
 	
@@ -222,6 +307,8 @@ func bot_wrong_action_penalty():
 	return 0
 	
 func update_bot_location(body,is_entered:bool, location_name: String):
+	if body != self:
+		return
 	bot_location[location_name] = is_entered
 	#print("Entered:",is_entered,"Location:",location_name)
 	
@@ -248,14 +335,14 @@ func sum(accum, number):
 func update_raycast_penalty() -> float:
 	var raycast_obs = self.raycast_sensor.get_observation()
 	var reward = raycast_obs.reduce(sum) / 10.0 * -1
-	if steps % 100==0:
-		print("raycast penalty",reward)
+	#if steps % 100==0:
+		#print("raycast penalty",reward)
 	return reward 
 	
 func update_exploration_reward() -> float:
 	var cell = Vector2i(floor(position.x / 64.0), floor(position.y / 64.0))
 	if not visited_cells.has(cell):
-		print("exploration reward: ", cell)
+		#print("exploration reward: ", cell)
 		visited_cells[cell] = true
 		return 0.1
 	return 0.0

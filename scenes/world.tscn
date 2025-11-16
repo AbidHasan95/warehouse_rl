@@ -1,10 +1,11 @@
-[gd_scene load_steps=10 format=3 uid="uid://c2yrtulsplmwk"]
+[gd_scene load_steps=11 format=3 uid="uid://c2yrtulsplmwk"]
 
 [ext_resource type="Texture2D" uid="uid://bew68ftchjdj6" path="res://Assets/Obj-1.png" id="1_4wyf3"]
 [ext_resource type="Script" uid="uid://b8e3ua5t7lxom" path="res://Scripts/world.gd" id="1_71j4m"]
 [ext_resource type="Texture2D" uid="uid://bm02dt86evgvp" path="res://Assets/Obj-2.png" id="2_k0juu"]
 [ext_resource type="Texture2D" uid="uid://v3gu5fj7wqe7" path="res://Assets/Obj-3.png" id="3_71j4m"]
 [ext_resource type="PackedScene" uid="uid://u5md3yciipo0" path="res://scenes/unload_bot.tscn" id="4_k0juu"]
+[ext_resource type="Script" uid="uid://t3weqfru3jfi" path="res://addons/god_plot/tools/graphs/graph_2d.gd" id="6_qfnet"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_e5uuo"]
 size = Vector2(456, 129.166)
@@ -13,10 +14,10 @@ size = Vector2(456, 129.166)
 size = Vector2(72, 208)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_k0juu"]
-size = Vector2(1917, 50)
+size = Vector2(1920, 40)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_71j4m"]
-size = Vector2(37, 1001)
+size = Vector2(40.375, 1000)
 
 [node name="World" type="Node2D"]
 script = ExtResource("1_71j4m")
@@ -43,15 +44,23 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.438429, 0.460534, 0.455176, 1)
 
-[node name="StatsLabel" type="Label" parent="."]
-visible = false
-offset_left = 1768.0
-offset_top = 80.0
-offset_right = 1808.0
-offset_bottom = 135.0
+[node name="StatsLabel1" type="Label" parent="."]
+offset_left = 1464.0
+offset_top = 48.0
+offset_right = 1689.0
+offset_bottom = 103.0
 theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_font_sizes/font_size = 40
-text = "0"
+text = "Reward: 0.0"
+
+[node name="StatsLabel2" type="Label" parent="."]
+offset_left = 1464.0
+offset_top = 104.0
+offset_right = 1689.0
+offset_bottom = 159.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 40
+text = "Reward: 0.0"
 
 [node name="shelf1" type="Area2D" parent="."]
 position = Vector2(376, 904)
@@ -205,21 +214,41 @@ text = "0"
 collision_layer = 2
 
 [node name="CollisionShapeWallTop" type="CollisionShape2D" parent="WallArea2D" groups=["wall"]]
-position = Vector2(960, 16)
+position = Vector2(960, 20)
 shape = SubResource("RectangleShape2D_k0juu")
 
 [node name="CollisionShapeWallBottom" type="CollisionShape2D" parent="WallArea2D" groups=["wall"]]
-position = Vector2(961.5, 1064)
+position = Vector2(960, 1060)
 shape = SubResource("RectangleShape2D_k0juu")
 
 [node name="CollisionShapeWallLeft" type="CollisionShape2D" parent="WallArea2D" groups=["wall"]]
-position = Vector2(20, 540)
+position = Vector2(20.1875, 540)
 shape = SubResource("RectangleShape2D_71j4m")
 
 [node name="CollisionShapeWallRight" type="CollisionShape2D" parent="WallArea2D" groups=["wall"]]
-position = Vector2(1896, 536)
+position = Vector2(1899.625, 540.125)
 shape = SubResource("RectangleShape2D_71j4m")
 
-[node name="Unload_Bot" parent="." instance=ExtResource("4_k0juu")]
+[node name="Unload_Bot1" parent="." instance=ExtResource("4_k0juu")]
 position = Vector2(1000, 336)
 scale = Vector2(0.2, 0.2)
+
+[node name="Unload_Bot2" parent="." instance=ExtResource("4_k0juu")]
+position = Vector2(1688, 776)
+scale = Vector2(0.2, 0.2)
+
+[node name="Graph2D" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 1464.0
+offset_top = 184.0
+offset_right = 1832.0
+offset_bottom = 400.0
+script = ExtResource("6_qfnet")
+x_tick_count = 2
+x_gridlines_opacity = 0.0
+y_min = -5.0
+y_tick_count = 2
+y_gridlines_opacity = 0.0
+axis_thickness = 2.0
+metadata/_custom_type_script = "uid://t3weqfru3jfi"
