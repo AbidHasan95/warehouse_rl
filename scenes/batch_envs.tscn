@@ -1,9 +1,13 @@
-[gd_scene load_steps=3 format=3 uid="uid://d3425vyydruy7"]
+[gd_scene load_steps=4 format=3 uid="uid://d3425vyydruy7"]
 
 [ext_resource type="PackedScene" uid="uid://c2yrtulsplmwk" path="res://scenes/world.tscn" id="1_3b5pu"]
+[ext_resource type="Script" uid="uid://bsany4simcrpb" path="res://Scripts/batch_envs.gd" id="1_v0te7"]
 [ext_resource type="Script" uid="uid://dbi4jecafoqex" path="res://addons/godot_rl_agents/sync.gd" id="2_p8dsb"]
 
 [node name="BatchEnvs" type="Node"]
+script = ExtResource("1_v0te7")
+obstacle_1_speed = 200
+obstacles_present = 1
 
 [node name="World" parent="." instance=ExtResource("1_3b5pu")]
 

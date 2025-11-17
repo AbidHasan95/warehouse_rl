@@ -64,6 +64,7 @@ text = "Reward: 0.0"
 
 [node name="shelf1" type="Area2D" parent="."]
 position = Vector2(376, 904)
+collision_layer = 4
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="shelf1"]
 shape = SubResource("RectangleShape2D_e5uuo")
@@ -88,6 +89,7 @@ text = "0"
 
 [node name="shelf2" type="Area2D" parent="."]
 position = Vector2(952, 904)
+collision_layer = 4
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="shelf2"]
 shape = SubResource("RectangleShape2D_e5uuo")
@@ -110,6 +112,7 @@ text = "0"
 
 [node name="shelf3" type="Area2D" parent="."]
 position = Vector2(1536, 912)
+collision_layer = 4
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="shelf3"]
 shape = SubResource("RectangleShape2D_e5uuo")
@@ -146,8 +149,27 @@ offset_right = 224.667
 offset_bottom = 67.333
 color = Color(0.25098, 0.25098, 0.25098, 1)
 
+[node name="innerObstacle2" type="Area2D" parent="."]
+process_mode = 4
+visible = false
+position = Vector2(1410, 543)
+scale = Vector2(0.5, 0.2)
+collision_layer = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="innerObstacle2"]
+position = Vector2(-3.33334, -7.91699)
+shape = SubResource("RectangleShape2D_e5uuo")
+
+[node name="ColorRect" type="ColorRect" parent="innerObstacle2"]
+offset_left = -231.333
+offset_top = -76.667
+offset_right = 224.667
+offset_bottom = 67.333
+color = Color(0.25098, 0.25098, 0.25098, 1)
+
 [node name="loadingArea" type="Area2D" parent="."]
 position = Vector2(170, 171)
+collision_layer = 4
 
 [node name="ColorRect" type="ColorRect" parent="loadingArea"]
 offset_left = -73.0
@@ -234,7 +256,7 @@ position = Vector2(1000, 336)
 scale = Vector2(0.2, 0.2)
 
 [node name="Unload_Bot2" parent="." instance=ExtResource("4_k0juu")]
-position = Vector2(1688, 776)
+position = Vector2(1432, 392)
 scale = Vector2(0.2, 0.2)
 
 [node name="Graph2D" type="Control" parent="."]

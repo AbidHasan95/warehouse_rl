@@ -26,6 +26,7 @@ scale = Vector2(0.5, 0.5)
 script = ExtResource("3_lh7yw")
 collision_mask = 3
 collide_with_areas = true
+n_rays = 32.0
 ray_length = 1500
 
 [node name="AIController2D" type="Node2D" parent="." groups=["AGENT"]]

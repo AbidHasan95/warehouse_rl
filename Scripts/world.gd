@@ -1,10 +1,22 @@
 extends Node2D
+
+# Nodes
 @onready var wall2 = $WallArea2D
+@onready var innerObstacle1 = $innerObstacle1
+@onready var batch_envs_node = $".."
+
+## Bots
+@onready var unload_bot1: CharacterBody2D = $Unload_Bot1
+@onready var unload_bot2: CharacterBody2D = $Unload_Bot2
+
 var loading_bay_items = []
 var LOADING_BAY_SIZE = 3
-@onready var innerObstacle1 = $innerObstacle1
-var inner_obstacle1_speed = 100
-var velocity = Vector2.RIGHT
+
+var inner_obstacle1_speed = 0
+var inner_obstacle1_velocity = Vector2.RIGHT
+var obstacle_1_type = ""
+var num_agents = 0
+var num_obstacles_present = 0
 
 var item_sprites = [
 	{"name": "obj1", "index":1 ,"sprite":preload("res://Assets/Obj-1.png")},
@@ -17,14 +29,26 @@ var item_sprites = [
 	$loadingArea/VBoxContainer/loadingArea_Item1/Sprite2D
 ]
 func _process(delta: float) -> void:
-	if innerObstacle1.position.x >= 1700:
-		velocity = Vector2.LEFT
-	if innerObstacle1.position.x <= 170:
-		velocity = Vector2.RIGHT	
-	#velocity = Vector2.RIGHT * inner_obstacle1_speed
-	innerObstacle1.position += delta * velocity * inner_obstacle1_speed
+	if inner_obstacle1_speed!= 0:
+		if innerObstacle1.position.x >= 1700:
+			inner_obstacle1_velocity = Vector2.LEFT
+		if innerObstacle1.position.x <= 170:
+			inner_obstacle1_velocity = Vector2.RIGHT	
+		innerObstacle1.position += delta * inner_obstacle1_velocity * inner_obstacle1_speed
 #@onready var 
 func _ready() -> void:
+	# Number of inner obstacles
+	num_obstacles_present = batch_envs_node.obstacles_present
+	if num_obstacles_present == 0:
+		innerObstacle1.process_mode = Node.PROCESS_MODE_DISABLED
+		innerObstacle1.visible = false
+	else:
+		# Inner_obstacle speed
+		inner_obstacle1_speed = batch_envs_node.obstacle_1_speed
+	num_agents = batch_envs_node.num_agents
+	if num_agents == 1:
+		unload_bot2.process_mode = Node.PROCESS_MODE_DISABLED
+		unload_bot2.visible = false
 	reset_loading_bay()
 	
 #func update_loading_area_item_sprite(slot_index:int, item_texture_index):

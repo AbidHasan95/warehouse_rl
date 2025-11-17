@@ -8,6 +8,7 @@ extends CharacterBody2D
 @onready var bot1_tray_obj_sprite:Sprite2D = $TrayObjectSprite
 @onready var bot_sprite: Sprite2D = $Sprite2D
 
+
 @onready var shelf1:Area2D = $"../shelf1"
 @onready var shelf2:Area2D = $"../shelf2"
 @onready var shelf3:Area2D = $"../shelf3"
@@ -112,7 +113,7 @@ func load_item():
 		ai_controller.reward -= 2
 		return
 		
-	ai_controller.reward += 20
+	ai_controller.reward += 120
 	var item_obj = world.unload_load_bay()
 	bot1_tray_obj_sprite.texture = item_obj["sprite"]
 	tray_item_index = item_obj["index"]
@@ -130,7 +131,7 @@ func unload_item():
 	#print(tray_item_index,bot_location)
 	if (tray_item_index==1 and bot_location["shelf1"]) or (tray_item_index==2 and bot_location["shelf2"]) or (tray_item_index==3 and bot_location["shelf3"]):		
 		ai_controller.done = true
-		ai_controller.reward+= 20
+		ai_controller.reward+= 120
 		update_ui_successful_loads_unloads("unload")
 		bot1_tray_obj_sprite.texture = null
 		tray_item_index = 0
@@ -226,7 +227,6 @@ func _process(delta: float) -> void:
 
 	if steps % 80==0:
 		var avg = calculate_mean(plot_series_array)
-		#print("plot point-",plot_series_array.size(), " steps:",steps, " line series data-",line_series.data.size(), " data -",line_series.data)
 		if sync_node.control_mode ==2:
 			if line_series.data.size() >= 15:
 				for idx in range(line_series.data.size()):
@@ -320,10 +320,11 @@ func update_reward():
 	ai_controller.reward += bot_wrong_action_penalty()
 	ai_controller.reward += update_exploration_reward()
 	ai_controller.reward += update_raycast_penalty()
-	#if steps % 100==0:
-		#var raycast_obs = self.raycast_sensor.get_observation()
-		#print("raycast:",raycast_obs)
-	#ai_controller.reward += movement_progress_reward()
+	#ai_controller.reward += movement_progress_reward() # bot gets stuck in the other side of obstacle when destination is just beyond the obstacle
+	if steps % 100==0:
+		var raycast_obs = self.raycast_sensor.get_observation()
+		#print(name, " raycast:",raycast_obs)
+	
 	#if steps % 100==0:
 		#if steps>=10000:
 			#steps=0
@@ -334,7 +335,7 @@ func sum(accum, number):
 	
 func update_raycast_penalty() -> float:
 	var raycast_obs = self.raycast_sensor.get_observation()
-	var reward = raycast_obs.reduce(sum) / 10.0 * -1
+	var reward = raycast_obs.reduce(sum) / raycast_sensor.n_rays  * -1
 	#if steps % 100==0:
 		#print("raycast penalty",reward)
 	return reward 
@@ -390,6 +391,3 @@ func movement_progress_reward():
 	if alignment > 0.1:  # moving at least somewhat toward target
 		return alignment * 0.02  # small continuous reward
 	return 0.0
-		
-	
-	
