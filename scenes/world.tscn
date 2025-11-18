@@ -46,21 +46,30 @@ color = Color(0.438429, 0.460534, 0.455176, 1)
 
 [node name="StatsLabel1" type="Label" parent="."]
 offset_left = 1464.0
-offset_top = 48.0
+offset_top = 40.0
 offset_right = 1689.0
-offset_bottom = 103.0
+offset_bottom = 90.0
 theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_font_sizes/font_size = 40
+theme_override_font_sizes/font_size = 36
 text = "Reward: 0.0"
 
 [node name="StatsLabel2" type="Label" parent="."]
 offset_left = 1464.0
-offset_top = 104.0
+offset_top = 88.0
 offset_right = 1689.0
-offset_bottom = 159.0
+offset_bottom = 138.0
 theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_font_sizes/font_size = 40
+theme_override_font_sizes/font_size = 36
 text = "Reward: 0.0"
+
+[node name="NumResetsLabel" type="Label" parent="."]
+offset_left = 1464.0
+offset_top = 424.0
+offset_right = 1669.0
+offset_bottom = 474.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 36
+text = "Collisions: 0"
 
 [node name="shelf1" type="Area2D" parent="."]
 position = Vector2(376, 904)
@@ -257,6 +266,10 @@ scale = Vector2(0.2, 0.2)
 
 [node name="Unload_Bot2" parent="." instance=ExtResource("4_k0juu")]
 position = Vector2(1432, 392)
+scale = Vector2(0.2, 0.2)
+
+[node name="Unload_Bot3" parent="." instance=ExtResource("4_k0juu")]
+position = Vector2(1382.0001, 171.00003)
 scale = Vector2(0.2, 0.2)
 
 [node name="Graph2D" type="Control" parent="."]

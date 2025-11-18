@@ -36,12 +36,12 @@ var reward_diff = 0
 var plot_series_array = []
 var plot_series_array_avg = []
 
-var successful_loads_unloads = {
-	"loading_bay": 0,
-	"shelf1": 0,
-	"shelf2": 0,
-	"shelf3": 0
-}
+#var successful_loads_unloads = {
+	#"loading_bay": 0,
+	#"shelf1": 0,
+	#"shelf2": 0,
+	#"shelf3": 0
+#}
 
 var steps = 0
 var bot_location = {
@@ -64,6 +64,7 @@ var _velocity := Vector2.ZERO
 var _action_move := Vector2.ZERO
 var _action_load := false
 var _action_unload := false
+var _action_can_move := 0
 var speed =  500
 var friction = 0.18
 var tray_item_index = 0 #0 for empty cart, otherwise 1,2 or 3
@@ -90,20 +91,20 @@ func gameover():
 	best_distance = 2500
 	ai_controller.reset()
 	
-func update_ui_successful_loads_unloads(action_type):
-	if action_type=="load":
-		successful_loads_unloads["loading_bay"]+=1
-		loading_stat_label.text = str(successful_loads_unloads["loading_bay"])
-	elif action_type=="unload":
-		if tray_item_index==1:
-			successful_loads_unloads["shelf1"]+=1
-			shelf1_stat_label.text = str(successful_loads_unloads["shelf1"])
-		elif tray_item_index==2:
-			successful_loads_unloads["shelf2"]+=1
-			shelf2_stat_label.text = str(successful_loads_unloads["shelf2"])
-		elif tray_item_index==3:
-			successful_loads_unloads["shelf3"]+=1
-			shelf3_stat_label.text = str(successful_loads_unloads["shelf3"])
+#func update_ui_successful_loads_unloads(action_type):
+	#if action_type=="load":
+		#successful_loads_unloads["loading_bay"]+=1
+		#loading_stat_label.text = str(successful_loads_unloads["loading_bay"])
+	#elif action_type=="unload":
+		#if tray_item_index==1:
+			#successful_loads_unloads["shelf1"]+=1
+			#shelf1_stat_label.text = str(successful_loads_unloads["shelf1"])
+		#elif tray_item_index==2:
+			#successful_loads_unloads["shelf2"]+=1
+			#shelf2_stat_label.text = str(successful_loads_unloads["shelf2"])
+		#elif tray_item_index==3:
+			#successful_loads_unloads["shelf3"]+=1
+			#shelf3_stat_label.text = str(successful_loads_unloads["shelf3"])
 		
 
 	
@@ -117,7 +118,7 @@ func load_item():
 	var item_obj = world.unload_load_bay()
 	bot1_tray_obj_sprite.texture = item_obj["sprite"]
 	tray_item_index = item_obj["index"]
-	update_ui_successful_loads_unloads("load")
+	world.update_ui_successful_loads_unloads("load", tray_item_index)
 	best_distance = 2500
 	
 func is_holding_item():
@@ -132,7 +133,7 @@ func unload_item():
 	if (tray_item_index==1 and bot_location["shelf1"]) or (tray_item_index==2 and bot_location["shelf2"]) or (tray_item_index==3 and bot_location["shelf3"]):		
 		ai_controller.done = true
 		ai_controller.reward+= 120
-		update_ui_successful_loads_unloads("unload")
+		world.update_ui_successful_loads_unloads("unload", tray_item_index)
 		bot1_tray_obj_sprite.texture = null
 		tray_item_index = 0
 		best_distance = position.distance_to(loading_area.position)
@@ -141,14 +142,13 @@ func unload_item():
 		return
 	
 func _ready() -> void:
-	print("Mode: ",sync_node.control_mode)
 	ai_controller.init(self)
 	raycast_sensor.activate()
 	wall.body_entered.connect(onWallEnter)
 	innerObstacle1.body_entered.connect(onWallEnter)
 	if name == "Unload_Bot2":
 		bot_sprite.self_modulate = Color(0.2,0.53,0.85,1.0)
-	else:
+	elif name == "Unload_Bot1":
 		bot_sprite.self_modulate = Color(0.41, 0.54, 0.32, 1)
 	#Update bot location
 	# Entry
@@ -195,9 +195,9 @@ func _process(delta: float) -> void:
 	steps += 1
 	#print("bot location:",position, " loading bay position:", loading_area.position, "shelf1 location: ", shelf1.position)
 	var direction = get_direction()
-	if direction.length() > 1.0:
+	if direction.length() > 1.5:
 		direction = direction.normalized()
-	var target_velocity = direction * speed
+	var target_velocity = direction * speed * _action_can_move
 	_velocity += (target_velocity - _velocity) * friction
 	set_velocity(_velocity)
 	move_and_slide()
@@ -281,6 +281,7 @@ func get_area_distances():
 func wallHit():
 	#ai_controller.done = true
 	#print("wall hit by ",self.name)
+	world.update_collision_stats()
 	ai_controller.reward -= 80.0
 	gameover()
 	
@@ -291,6 +292,11 @@ func onWallEnter(body)-> void:
 	wallHit()
 	
 func get_direction():
+	#print("action_move:", _action_move, " length-> " ,_action_move.length(), " normalized: ", _action_move.normalized())
+	#if abs(_action_move.x) < 0.2:
+		#_action_move.x = 0.0
+	#if abs(_action_move.y) < 0.2:
+		#_action_move.y = 0.0
 	if ai_controller.heuristic == "model":
 		return _action_move
 	var direction := Vector2(

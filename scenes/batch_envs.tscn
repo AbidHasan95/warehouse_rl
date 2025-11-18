@@ -6,10 +6,17 @@
 
 [node name="BatchEnvs" type="Node"]
 script = ExtResource("1_v0te7")
-obstacle_1_speed = 200
+num_agents = 2
 obstacles_present = 1
+camera_view_preset = 4
 
-[node name="World" parent="." instance=ExtResource("1_3b5pu")]
+[node name="Sync" type="Node" parent="."]
+script = ExtResource("2_p8dsb")
+control_mode = 2
+speed_up = 2.0
+onnx_model_path = "model.onnx"
+
+[node name="World1" parent="." instance=ExtResource("1_3b5pu")]
 
 [node name="World2" parent="." instance=ExtResource("1_3b5pu")]
 position = Vector2(1920, 0)
@@ -56,11 +63,54 @@ position = Vector2(3840, 3240)
 [node name="World16" parent="." instance=ExtResource("1_3b5pu")]
 position = Vector2(5760, 3240)
 
+[node name="World17" parent="." instance=ExtResource("1_3b5pu")]
+position = Vector2(7680, 0)
+
+[node name="World18" parent="." instance=ExtResource("1_3b5pu")]
+position = Vector2(9600, 0)
+
+[node name="World19" parent="." instance=ExtResource("1_3b5pu")]
+position = Vector2(11520, 0)
+
+[node name="World20" parent="." instance=ExtResource("1_3b5pu")]
+position = Vector2(13440, 0)
+
+[node name="World21" parent="." instance=ExtResource("1_3b5pu")]
+position = Vector2(7680, 1080)
+
+[node name="World22" parent="." instance=ExtResource("1_3b5pu")]
+position = Vector2(9600, 1080)
+
+[node name="World23" parent="." instance=ExtResource("1_3b5pu")]
+position = Vector2(11520, 1080)
+
+[node name="World24" parent="." instance=ExtResource("1_3b5pu")]
+position = Vector2(13440, 1080)
+
+[node name="World25" parent="." instance=ExtResource("1_3b5pu")]
+position = Vector2(7680, 2160)
+
+[node name="World26" parent="." instance=ExtResource("1_3b5pu")]
+position = Vector2(9600, 2160)
+
+[node name="World27" parent="." instance=ExtResource("1_3b5pu")]
+position = Vector2(11520, 2160)
+
+[node name="World28" parent="." instance=ExtResource("1_3b5pu")]
+position = Vector2(13440, 2160)
+
+[node name="World29" parent="." instance=ExtResource("1_3b5pu")]
+position = Vector2(7680, 3240)
+
+[node name="World30" parent="." instance=ExtResource("1_3b5pu")]
+position = Vector2(9600, 3240)
+
+[node name="World31" parent="." instance=ExtResource("1_3b5pu")]
+position = Vector2(11520, 3240)
+
+[node name="World32" parent="." instance=ExtResource("1_3b5pu")]
+position = Vector2(13440, 3240)
+
 [node name="Camera2D" type="Camera2D" parent="."]
 anchor_mode = 0
-
-[node name="Sync" type="Node" parent="."]
-script = ExtResource("2_p8dsb")
-control_mode = 2
-speed_up = 2.0
-onnx_model_path = "model.onnx"
+zoom = Vector2(0.5, 0.5)
