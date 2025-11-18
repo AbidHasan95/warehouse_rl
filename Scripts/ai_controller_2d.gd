@@ -50,12 +50,13 @@ func set_action(action):
 	#_player._action_unload= bool(action["action_load_unload"][1])
 	bot._action_load= action["move"][2]>0
 	bot._action_unload= action["move"][3]>0
+	bot._action_can_move = 1 if action["move"][4] >= 0 else 0
 
 #func get_action_space():
 	#return {"move": {"size": 2, "action_type": "continuous"},"action_load": {"size": 1, "action_type": "discrete"}, "action_unload": {"size": 1, "action_type": "discrete"}}
 	
 func get_action_space():
-	return {"move": {"size": 4, "action_type": "continuous"}}
+	return {"move": {"size": 5, "action_type": "continuous"}}
 	
 #func get_action_space():
 	#return {"move": {"size": 2, "action_type": "continuous"},"action_load_unload": {"size": 1, "action_type": "discrete"}}
