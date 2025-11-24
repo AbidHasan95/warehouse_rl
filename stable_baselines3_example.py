@@ -16,6 +16,48 @@ from godot_rl.wrappers.stable_baselines_wrapper import StableBaselinesGodotEnv
 # 2.  chmod +x examples/godot_rl_BallChase/bin/BallChase.x86_64
 if can_import("ray"):
     print("WARNING, stable baselines and ray[rllib] are not compatible")
+# godot_stats_callback.py
+from stable_baselines3.common.callbacks import BaseCallback
+mylist = []
+import pandas as pd
+class GodotStatsCallback(BaseCallback):
+    """
+    Logs custom info fields coming from Godot into TensorBoard.
+    """
+    def __init__(self, verbose=0):
+        super().__init__(verbose)
+
+    def _on_step(self) -> bool:
+        infos = self.locals.get("infos", [])
+        # print("Infos received from Godot: failures - ", infos[0]["godot/failures"]," world_id - ", infos[0]["godot/world_id"], " steps_survived - ",infos[0]["godot/steps_survived"])
+        # print("Infos received from Godot: ", infos)
+        mylist.extend(infos)
+        for info in infos:
+            for key, value in info.items():
+                # if key.startswith("godot/"):
+                    self.logger.record(f"godot/{key}", value)
+                    # if key == "godot/failures":
+                    #     print(f"Logged {key}: {value}")
+                # # Log only if keys exist
+                # if "successes" in info:
+                #     self.logger.record("godot/successes", info["successes"])
+
+                # if "failures" in info:
+                #     self.logger.record("godot/failures", info["failures"])
+
+                # if "distance" in info:
+                #     self.logger.record("godot/distance", info["distance"])
+
+                # if "tray_item" in info:
+                #     self.logger.record("godot/tray_item", info["tray_item"])
+
+                # # Log episode reward if Godot sends it
+                # if "episode_total_reward" in info:
+                #     self.logger.record("godot/episode_total_reward", info["episode_total_reward"])
+
+        return True
+
+callbacks = []
 
 parser = argparse.ArgumentParser(allow_abbrev=False)
 parser.add_argument(
@@ -137,7 +179,8 @@ def cleanup():
     handle_onnx_export()
     handle_model_save()
     close_env()
-
+    df = pd.DataFrame(mylist)
+    df.to_csv('training_stats_sb3.csv', index=False)
 
 path_checkpoint = os.path.join(args.experiment_dir, args.experiment_name + "_checkpoints")
 abs_path_checkpoint = os.path.abspath(path_checkpoint)
@@ -216,7 +259,9 @@ else:
             save_path=path_checkpoint,
             name_prefix=args.experiment_name,
         )
-        learn_arguments["callback"] = checkpoint_callback
+        callbacks.append(checkpoint_callback)
+    callbacks.append(GodotStatsCallback())
+    learn_arguments["callback"] = callbacks
     try:
         model.learn(**learn_arguments)
     except (KeyboardInterrupt, ConnectionError, ConnectionResetError):

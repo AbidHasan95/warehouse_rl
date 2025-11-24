@@ -6,14 +6,12 @@
 
 [node name="BatchEnvs" type="Node"]
 script = ExtResource("1_v0te7")
-num_agents = 2
-obstacles_present = 1
 camera_view_preset = 4
 
 [node name="Sync" type="Node" parent="."]
 script = ExtResource("2_p8dsb")
 control_mode = 2
-speed_up = 2.0
+speed_up = 8.0
 onnx_model_path = "model.onnx"
 
 [node name="World1" parent="." instance=ExtResource("1_3b5pu")]

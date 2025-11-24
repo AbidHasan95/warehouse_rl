@@ -74,9 +74,10 @@ func _ready() -> void:
 func disable_unload_bots():
 	print("world.num_agents -",batch_envs_node.num_agents)
 	for i in range(batch_envs_node.num_agents+1,max_unload_bots+1):
-		var node = get_node("Unload_Bot%d" % i)
+		var node:Node = get_node("Unload_Bot%d" % i)
 		node.process_mode = Node.PROCESS_MODE_DISABLED
 		node.visible = false
+		node.find_child("AIController2D").remove_from_group("AGENT")
 		
 #func update_loading_area_item_sprite(slot_index:int, item_texture_index):
 	#loading_area_sprite_nodes[slot_index].texture = item_sprites[item_texture_index]["sprite"]

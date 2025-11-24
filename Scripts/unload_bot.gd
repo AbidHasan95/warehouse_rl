@@ -36,14 +36,20 @@ var reward_diff = 0
 var plot_series_array = []
 var plot_series_array_avg = []
 
-#var successful_loads_unloads = {
-	#"loading_bay": 0,
-	#"shelf1": 0,
-	#"shelf2": 0,
-	#"shelf3": 0
-#}
-
+# Bot stats - start
 var steps = 0
+var is_success = false
+
+var stats_loads_unloads = {
+	"loading": 0,
+	"unloading_shelf1": 0,
+	"unloading_shelf2": 0,
+	"unloading_shelf3": 0,
+	"failures": 0,
+	"unloading": 0
+}
+# Bot stats -end
+
 var bot_location = {
 	"loading_bay": false,
 	"shelf1": false,
@@ -61,10 +67,13 @@ const WIDTH = 1920
 const HEIGHT = 1080
 
 var _velocity := Vector2.ZERO
+
+# actions - RL
 var _action_move := Vector2.ZERO
 var _action_load := false
 var _action_unload := false
-var _action_can_move := 0
+var _action_can_move := 1
+
 var speed =  500
 var friction = 0.18
 var tray_item_index = 0 #0 for empty cart, otherwise 1,2 or 3
@@ -73,9 +82,12 @@ var best_distance = 2500
 func gameover():
 	#print("wallentered")
 	_velocity = Vector2.ZERO
+	velocity = Vector2.ZERO
+	_action_move = Vector2.ZERO
 	position = getNewPosition()
 	#innerObstacle1.global_position = getNewPosition_obstacle() #958,687
 	world.get_node("innerObstacle1").position = getNewPosition_obstacle()
+	#print("velocity after hit:",velocity, _velocity)
 	# Old logic
 	#tray_item_index = 0
 	#bot1_tray_obj_sprite.texture = null
@@ -89,24 +101,10 @@ func gameover():
 	#ai_controller.done = true
 	#best_distance = position.distance_to(loading_area.position)
 	best_distance = 2500
-	ai_controller.reset()
-	
-#func update_ui_successful_loads_unloads(action_type):
-	#if action_type=="load":
-		#successful_loads_unloads["loading_bay"]+=1
-		#loading_stat_label.text = str(successful_loads_unloads["loading_bay"])
-	#elif action_type=="unload":
-		#if tray_item_index==1:
-			#successful_loads_unloads["shelf1"]+=1
-			#shelf1_stat_label.text = str(successful_loads_unloads["shelf1"])
-		#elif tray_item_index==2:
-			#successful_loads_unloads["shelf2"]+=1
-			#shelf2_stat_label.text = str(successful_loads_unloads["shelf2"])
-		#elif tray_item_index==3:
-			#successful_loads_unloads["shelf3"]+=1
-			#shelf3_stat_label.text = str(successful_loads_unloads["shelf3"])
-		
-
+	ai_controller.done = true
+	update_stats_count("failures")
+	#ai_controller.reset()
+	#reset_stats_count()
 	
 func load_item():
 	#print("load item by", self.name)
@@ -119,6 +117,7 @@ func load_item():
 	bot1_tray_obj_sprite.texture = item_obj["sprite"]
 	tray_item_index = item_obj["index"]
 	world.update_ui_successful_loads_unloads("load", tray_item_index)
+	update_stats_count("loading")
 	best_distance = 2500
 	
 func is_holding_item():
@@ -126,12 +125,43 @@ func is_holding_item():
 		return 1
 	else:
 		return 0
+		
+func reset_stats_count():
+	stats_loads_unloads = {
+		"loading": 0,
+		"unloading_shelf1": 0,
+		"unloading_shelf2": 0,
+		"unloading_shelf3": 0,
+		"failures": 0
+	}
+
+func update_stats_count(key):
+	stats_loads_unloads[key]+= 1
+	#print("stats_updated ->",key,"updated stats", stats_loads_unloads)
+	
+# Ends the episode
+func reset_bot_stats():
+	steps = 0
+	reset_stats_count()
+	is_success = false
+	
 	
 func unload_item():
 	#print("unload item by", self.name)
 	#print(tray_item_index,bot_location)
 	if (tray_item_index==1 and bot_location["shelf1"]) or (tray_item_index==2 and bot_location["shelf2"]) or (tray_item_index==3 and bot_location["shelf3"]):		
-		ai_controller.done = true
+		
+		#ai_controller.done = true
+		if stats_loads_unloads["unloading"] < 6:
+			print("unloading - ", stats_loads_unloads["unloading"])
+			ai_controller.done = true
+		elif stats_loads_unloads["unloading"] >= 6 and stats_loads_unloads["unloading"] % 2 == 0:
+			print("unloading >10 - ", stats_loads_unloads["unloading"])
+			ai_controller.done = true
+		else:
+			print("Not DONE ->",stats_loads_unloads["unloading"])
+		update_stats_count("unloading_shelf%d" % tray_item_index)
+		update_stats_count("unloading")
 		ai_controller.reward+= 120
 		world.update_ui_successful_loads_unloads("unload", tray_item_index)
 		bot1_tray_obj_sprite.texture = null
@@ -282,6 +312,7 @@ func wallHit():
 	#ai_controller.done = true
 	#print("wall hit by ",self.name)
 	world.update_collision_stats()
+	#update_stats_count("failures")
 	ai_controller.reward -= 80.0
 	gameover()
 	
@@ -328,7 +359,7 @@ func update_reward():
 	ai_controller.reward += update_raycast_penalty()
 	#ai_controller.reward += movement_progress_reward() # bot gets stuck in the other side of obstacle when destination is just beyond the obstacle
 	if steps % 100==0:
-		var raycast_obs = self.raycast_sensor.get_observation()
+		var raycast_obs = raycast_sensor.get_observation()
 		#print(name, " raycast:",raycast_obs)
 	
 	#if steps % 100==0:
@@ -340,11 +371,18 @@ func sum(accum, number):
 	return accum + number
 	
 func update_raycast_penalty() -> float:
-	var raycast_obs = self.raycast_sensor.get_observation()
-	var reward = raycast_obs.reduce(sum) / raycast_sensor.n_rays  * -1
+	var ray_collisions = []
+	for ray_obj in raycast_sensor.rays:
+		if ray_obj.get_collider() != null:
+			ray_collisions.append(ray_obj.get_collider().collision_layer)
+		else:
+			ray_collisions.append(0)
+	var raycast_obs = raycast_sensor.get_observation()
+	#var reward = raycast_obs.reduce(sum) / raycast_sensor.n_rays  * -1
+	var penalty = raycast_obs.reduce(sum)  * -1
 	#if steps % 100==0:
-		#print("raycast penalty",reward)
-	return reward 
+		#print("raycast collisions: ",ray_collisions, " obs -", raycast_obs)
+	return penalty 
 	
 func update_exploration_reward() -> float:
 	var cell = Vector2i(floor(position.x / 64.0), floor(position.y / 64.0))
